@@ -12,11 +12,11 @@ public final class FpsElement extends HudElement {
 
     @Override
     public void render(DrawContext context, MinecraftClient client) {
-        RenderUtil.panelText(context, client, x(), y(), "FPS " + client.getCurrentFps());
+        renderPanel(context, client, "FPS " + client.getCurrentFps());
     }
 
     @Override
     public int width(MinecraftClient client) {
-        return RenderUtil.panelWidth(client, "FPS " + client.getCurrentFps());
+        return panelWidth(client, "FPS " + client.getCurrentFps());
     }
 }

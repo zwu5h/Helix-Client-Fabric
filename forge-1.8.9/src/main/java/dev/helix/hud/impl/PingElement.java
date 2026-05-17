@@ -13,11 +13,11 @@ public final class PingElement extends HudElement {
     @Override
     public void render(Minecraft minecraft) {
         NetworkPlayerInfo info = minecraft.getNetHandler() == null ? null : minecraft.getNetHandler().getPlayerInfo(minecraft.thePlayer.getUniqueID());
-        RenderUtil.panelText(minecraft, getX(), getY(), "PING " + (info == null ? "--" : info.getResponseTime()));
+        renderPanel(minecraft, "PING " + (info == null ? "--" : info.getResponseTime()));
     }
 
     @Override
     public int getWidth(Minecraft minecraft) {
-        return RenderUtil.panelWidth(minecraft, "PING 000");
+        return panelWidth(minecraft, "PING 000");
     }
 }

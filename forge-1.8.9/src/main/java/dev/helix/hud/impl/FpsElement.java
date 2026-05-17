@@ -11,11 +11,11 @@ public final class FpsElement extends HudElement {
 
     @Override
     public void render(Minecraft minecraft) {
-        RenderUtil.panelText(minecraft, getX(), getY(), "FPS " + Minecraft.getDebugFPS());
+        renderPanel(minecraft, "FPS " + Minecraft.getDebugFPS());
     }
 
     @Override
     public int getWidth(Minecraft minecraft) {
-        return RenderUtil.panelWidth(minecraft, "FPS " + Minecraft.getDebugFPS());
+        return panelWidth(minecraft, "FPS " + Minecraft.getDebugFPS());
     }
 }

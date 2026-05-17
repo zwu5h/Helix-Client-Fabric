@@ -5,9 +5,13 @@ import dev.helix.hud.impl.CpsElement;
 import dev.helix.hud.impl.FpsElement;
 import dev.helix.hud.impl.KeystrokesElement;
 import dev.helix.hud.impl.ArmorElement;
+import dev.helix.hud.impl.ActiveModulesElement;
+import dev.helix.hud.impl.ClockElement;
 import dev.helix.hud.impl.DirectionElement;
+import dev.helix.hud.impl.MemoryElement;
 import dev.helix.hud.impl.PingElement;
 import dev.helix.hud.impl.PotionElement;
+import dev.helix.hud.impl.SessionElement;
 import dev.helix.hud.impl.SpeedElement;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -34,6 +38,10 @@ public final class HudManager {
         elements.add(new PingElement());
         elements.add(new DirectionElement());
         elements.add(new SpeedElement());
+        elements.add(new MemoryElement());
+        elements.add(new ClockElement());
+        elements.add(new SessionElement());
+        elements.add(new ActiveModulesElement());
     }
 
     public void tick(Minecraft minecraft) {
@@ -54,7 +62,9 @@ public final class HudManager {
         }
 
         for (HudElement element : elements) {
-            element.render(minecraft);
+            if (element.isVisible()) {
+                element.render(minecraft);
+            }
         }
     }
 

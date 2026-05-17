@@ -16,11 +16,11 @@ public final class CoordinatesElement extends HudElement {
                 + MathHelper.floor_double(minecraft.thePlayer.posX) + " "
                 + MathHelper.floor_double(minecraft.thePlayer.posY) + " "
                 + MathHelper.floor_double(minecraft.thePlayer.posZ);
-        RenderUtil.panelText(minecraft, getX(), getY(), text);
+        renderPanel(minecraft, text);
     }
 
     @Override
     public int getWidth(Minecraft minecraft) {
-        return RenderUtil.panelWidth(minecraft, "XYZ -0000 000 -0000");
+        return panelWidth(minecraft, "XYZ -0000 000 -0000");
     }
 }

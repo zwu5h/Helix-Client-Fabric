@@ -22,6 +22,7 @@ Controls:
 
 - Right Shift opens the ClickGUI.
 - H opens the in-game HUD editor.
+- In the HUD editor: drag to move, mouse wheel scales, right click toggles rainbow, `V` toggles visibility, `B` toggles background, `C` cycles accent colors.
 
 ## Build Forge 1.8.9
 
@@ -42,3 +43,4 @@ Controls:
 
 - Right Shift opens the ClickGUI.
 - H opens the in-game HUD editor.
+- In the HUD editor: drag to move, mouse wheel scales, right click toggles rainbow, `V` toggles visibility, `B` toggles background, `C` cycles accent colors.

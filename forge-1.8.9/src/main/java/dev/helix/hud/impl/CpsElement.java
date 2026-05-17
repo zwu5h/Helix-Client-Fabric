@@ -32,11 +32,11 @@ public final class CpsElement extends HudElement {
 
     @Override
     public void render(Minecraft minecraft) {
-        RenderUtil.panelText(minecraft, getX(), getY(), "CPS " + clicks.size());
+        renderPanel(minecraft, "CPS " + clicks.size());
     }
 
     @Override
     public int getWidth(Minecraft minecraft) {
-        return RenderUtil.panelWidth(minecraft, "CPS 00");
+        return panelWidth(minecraft, "CPS 00");
     }
 }

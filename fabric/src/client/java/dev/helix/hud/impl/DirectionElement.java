@@ -16,11 +16,11 @@ public final class DirectionElement extends HudElement {
     @Override
     public void render(DrawContext context, MinecraftClient client) {
         int index = MathHelper.floor((client.player.getYaw() * 8.0F / 360.0F) + 0.5D) & 7;
-        RenderUtil.panelText(context, client, x(), y(), "DIR " + DIRECTIONS[index]);
+        renderPanel(context, client, "DIR " + DIRECTIONS[index]);
     }
 
     @Override
     public int width(MinecraftClient client) {
-        return RenderUtil.panelWidth(client, "DIR NW");
+        return panelWidth(client, "DIR NW");
     }
 }

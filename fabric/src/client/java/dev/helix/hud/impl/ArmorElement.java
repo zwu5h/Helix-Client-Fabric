@@ -24,11 +24,11 @@ public final class ArmorElement extends HudElement {
                 pieces++;
             }
         }
-        RenderUtil.panelText(context, client, x(), y(), "ARM " + (pieces == 0 ? "--" : durability / pieces + "%"));
+        renderPanel(context, client, "ARM " + (pieces == 0 ? "--" : durability / pieces + "%"));
     }
 
     @Override
     public int width(MinecraftClient client) {
-        return RenderUtil.panelWidth(client, "ARM 100%");
+        return panelWidth(client, "ARM 100%");
     }
 }

@@ -14,11 +14,11 @@ public final class PingElement extends HudElement {
     @Override
     public void render(DrawContext context, MinecraftClient client) {
         PlayerListEntry entry = client.getNetworkHandler() == null ? null : client.getNetworkHandler().getPlayerListEntry(client.player.getUuid());
-        RenderUtil.panelText(context, client, x(), y(), "PING " + (entry == null ? "--" : entry.getLatency()));
+        renderPanel(context, client, "PING " + (entry == null ? "--" : entry.getLatency()));
     }
 
     @Override
     public int width(MinecraftClient client) {
-        return RenderUtil.panelWidth(client, "PING 000");
+        return panelWidth(client, "PING 000");
     }
 }

@@ -63,6 +63,10 @@ public final class ConfigManager {
                 if (state != null) {
                     element.setPosition(state.x, state.y);
                     element.setScale(state.scale);
+                    element.setVisible(state.visible);
+                    element.setRainbow(state.rainbow);
+                    element.setBackground(state.background);
+                    element.setAccentColor(state.accentColor);
                 }
             }
         }
@@ -102,6 +106,10 @@ public final class ConfigManager {
             state.x = element.x();
             state.y = element.y();
             state.scale = element.scale();
+            state.visible = element.visible();
+            state.rainbow = element.rainbow();
+            state.background = element.background();
+            state.accentColor = element.accentColor();
             config.hud.put(element.id(), state);
         }
 
@@ -142,5 +150,9 @@ public final class ConfigManager {
         private int x;
         private int y;
         private double scale = 1.0;
+        private boolean visible = true;
+        private boolean rainbow;
+        private boolean background = true;
+        private int accentColor = 0xFF8A35FF;
     }
 }

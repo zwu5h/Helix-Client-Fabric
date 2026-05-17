@@ -12,8 +12,10 @@ import java.io.IOException;
 
 public final class HudEditorScreen extends GuiScreen {
     private HudElement dragging;
+    private HudElement selected;
     private int dragOffsetX;
     private int dragOffsetY;
+    private static final int[] ACCENTS = {0xFF8A35FF, 0xFF35D8FF, 0xFFFF4FD8, 0xFF6CFF91, 0xFFFFD166};
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
@@ -21,11 +23,19 @@ public final class HudEditorScreen extends GuiScreen {
         drawGrid();
         for (HudElement element : HelixClient.HUD.elements()) {
             boolean hovered = element.contains(mc, mouseX, mouseY);
-            Gui.drawRect(element.getX() - 2, element.getY() - 2, element.getX() + element.getWidth(mc) + 2, element.getY() + element.getHeight(mc) + 2, hovered ? 0x6635D8FF : 0x33101822);
+            int frameColor = element == selected ? 0xAA8A35FF : hovered ? 0x6635D8FF : 0x33101822;
+            Gui.drawRect(element.getX() - 2, element.getY() - 2, element.getX() + element.getWidth(mc) + 2, element.getY() + element.getHeight(mc) + 2, frameColor);
             element.render(mc);
+            if (!element.isVisible()) {
+                Gui.drawRect(element.getX(), element.getY(), element.getX() + element.getWidth(mc), element.getY() + element.getHeight(mc), 0x66000000);
+                fontRendererObj.drawString("hidden", element.getX() + 5, element.getY() + 4, RenderUtil.MUTED);
+            }
         }
         fontRendererObj.drawString("HUD EDITOR", 12, 12, RenderUtil.CYAN);
-        fontRendererObj.drawString("Drag elements | Mouse wheel scales | H/Esc saves", 12, 24, RenderUtil.WHITE);
+        fontRendererObj.drawString("Drag | Wheel scale | Right click rainbow | V visible | B bg | C color", 12, 24, RenderUtil.WHITE);
+        if (selected != null) {
+            fontRendererObj.drawString(selected.getTitle() + "  rainbow: " + onOff(selected.isRainbow()) + "  visible: " + onOff(selected.isVisible()), 12, 36, selected.currentAccentColor());
+        }
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -33,6 +43,17 @@ public final class HudEditorScreen extends GuiScreen {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         for (HudElement element : HelixClient.HUD.elements()) {
             if (element.contains(mc, mouseX, mouseY)) {
+                selected = element;
+                if (mouseButton == 1) {
+                    element.toggleRainbow();
+                    HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+                    return;
+                }
+                if (mouseButton == 2) {
+                    element.toggleBackground();
+                    HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+                    return;
+                }
                 dragging = element;
                 dragOffsetX = mouseX - element.getX();
                 dragOffsetY = mouseY - element.getY();
@@ -78,6 +99,27 @@ public final class HudEditorScreen extends GuiScreen {
             mc.displayGuiScreen(null);
             return;
         }
+        if (selected != null && keyCode == Keyboard.KEY_R) {
+            selected.toggleRainbow();
+            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            return;
+        }
+        if (selected != null && keyCode == Keyboard.KEY_V) {
+            selected.setVisible(!selected.isVisible());
+            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            return;
+        }
+        if (selected != null && keyCode == Keyboard.KEY_B) {
+            selected.toggleBackground();
+            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            return;
+        }
+        if (selected != null && keyCode == Keyboard.KEY_C) {
+            selected.setAccentColor(nextAccent(selected.getAccentColor()));
+            selected.setRainbow(false);
+            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            return;
+        }
         super.keyTyped(typedChar, keyCode);
     }
 
@@ -104,5 +146,18 @@ public final class HudEditorScreen extends GuiScreen {
         for (int y = 0; y < height; y += 16) {
             Gui.drawRect(0, y, width, y + 1, 0x22101A24);
         }
+    }
+
+    private int nextAccent(int current) {
+        for (int i = 0; i < ACCENTS.length; i++) {
+            if (ACCENTS[i] == current) {
+                return ACCENTS[(i + 1) % ACCENTS.length];
+            }
+        }
+        return ACCENTS[0];
+    }
+
+    private String onOff(boolean value) {
+        return value ? "ON" : "OFF";
     }
 }

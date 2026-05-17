@@ -17,11 +17,11 @@ public final class CoordinatesElement extends HudElement {
         }
 
         String text = "XYZ " + client.player.getBlockX() + " " + client.player.getBlockY() + " " + client.player.getBlockZ();
-        RenderUtil.panelText(context, client, x(), y(), text);
+        renderPanel(context, client, text);
     }
 
     @Override
     public int width(MinecraftClient client) {
-        return RenderUtil.panelWidth(client, "XYZ -0000 000 -0000");
+        return panelWidth(client, "XYZ -0000 000 -0000");
     }
 }

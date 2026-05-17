@@ -13,8 +13,10 @@ import org.lwjgl.glfw.GLFW;
 
 public final class HudEditorScreen extends Screen {
     private HudElement dragging;
+    private HudElement selected;
     private int dragOffsetX;
     private int dragOffsetY;
+    private static final int[] ACCENTS = {0xFF8A35FF, 0xFF35D8FF, 0xFFFF4FD8, 0xFF6CFF91, 0xFFFFD166};
 
     public HudEditorScreen() {
         super(Text.literal("Helix HUD Editor"));
@@ -27,11 +29,19 @@ public final class HudEditorScreen extends Screen {
         MinecraftClient client = MinecraftClient.getInstance();
         for (HudElement element : HelixClient.HUD.elements()) {
             boolean hovered = element.contains(client, mouseX, mouseY);
-            context.fill(element.x() - 2, element.y() - 2, element.x() + element.width(client) + 2, element.y() + element.height(client) + 2, hovered ? 0x6635D8FF : 0x33101822);
+            int frameColor = element == selected ? 0xAA8A35FF : hovered ? 0x6635D8FF : 0x33101822;
+            context.fill(element.x() - 2, element.y() - 2, element.x() + element.width(client) + 2, element.y() + element.height(client) + 2, frameColor);
             element.render(context, client);
+            if (!element.visible()) {
+                context.fill(element.x(), element.y(), element.x() + element.width(client), element.y() + element.height(client), 0x66000000);
+                context.drawText(textRenderer, "hidden", element.x() + 5, element.y() + 4, RenderUtil.MUTED, false);
+            }
         }
         context.drawText(textRenderer, "HUD EDITOR", 12, 12, RenderUtil.CYAN, false);
-        context.drawText(textRenderer, "Drag elements | Mouse wheel scales | H/Esc saves", 12, 24, RenderUtil.WHITE, false);
+        context.drawText(textRenderer, "Drag | Wheel scale | Right click rainbow | V visible | B bg | C color", 12, 24, RenderUtil.WHITE, false);
+        if (selected != null) {
+            context.drawText(textRenderer, selected.title() + "  rainbow: " + onOff(selected.rainbow()) + "  visible: " + onOff(selected.visible()), 12, 36, selected.currentAccentColor(), false);
+        }
         super.render(context, mouseX, mouseY, delta);
     }
 
@@ -40,6 +50,17 @@ public final class HudEditorScreen extends Screen {
         MinecraftClient client = MinecraftClient.getInstance();
         for (HudElement element : HelixClient.HUD.elements()) {
             if (element.contains(client, (int) click.x(), (int) click.y())) {
+                selected = element;
+                if (click.button() == 1) {
+                    element.toggleRainbow();
+                    HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+                    return true;
+                }
+                if (click.button() == 2) {
+                    element.toggleBackground();
+                    HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+                    return true;
+                }
                 dragging = element;
                 dragOffsetX = (int) click.x() - element.x();
                 dragOffsetY = (int) click.y() - element.y();
@@ -88,6 +109,27 @@ public final class HudEditorScreen extends Screen {
             close();
             return true;
         }
+        if (selected != null && input.key() == GLFW.GLFW_KEY_R) {
+            selected.toggleRainbow();
+            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            return true;
+        }
+        if (selected != null && input.key() == GLFW.GLFW_KEY_V) {
+            selected.setVisible(!selected.visible());
+            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            return true;
+        }
+        if (selected != null && input.key() == GLFW.GLFW_KEY_B) {
+            selected.toggleBackground();
+            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            return true;
+        }
+        if (selected != null && input.key() == GLFW.GLFW_KEY_C) {
+            selected.setAccentColor(nextAccent(selected.accentColor()));
+            selected.setRainbow(false);
+            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            return true;
+        }
         return super.keyPressed(input);
     }
 
@@ -103,5 +145,18 @@ public final class HudEditorScreen extends Screen {
         for (int y = 0; y < height; y += 16) {
             context.fill(0, y, width, y + 1, 0x22101A24);
         }
+    }
+
+    private int nextAccent(int current) {
+        for (int i = 0; i < ACCENTS.length; i++) {
+            if (ACCENTS[i] == current) {
+                return ACCENTS[(i + 1) % ACCENTS.length];
+            }
+        }
+        return ACCENTS[0];
+    }
+
+    private String onOff(boolean value) {
+        return value ? "ON" : "OFF";
     }
 }

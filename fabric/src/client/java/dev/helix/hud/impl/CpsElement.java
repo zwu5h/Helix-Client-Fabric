@@ -29,11 +29,11 @@ public final class CpsElement extends HudElement {
 
     @Override
     public void render(DrawContext context, MinecraftClient client) {
-        RenderUtil.panelText(context, client, x(), y(), "CPS " + clicks.size());
+        renderPanel(context, client, "CPS " + clicks.size());
     }
 
     @Override
     public int width(MinecraftClient client) {
-        return RenderUtil.panelWidth(client, "CPS 00");
+        return panelWidth(client, "CPS 00");
     }
 }

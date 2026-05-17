@@ -2,6 +2,7 @@ package dev.helix.module;
 
 import dev.helix.module.impl.FullbrightModule;
 import dev.helix.module.impl.BetterChatModule;
+import dev.helix.module.impl.AutoJumpModule;
 import dev.helix.module.impl.CrosshairModule;
 import dev.helix.module.impl.HitColorModule;
 import dev.helix.module.impl.MotionBlurModule;
@@ -25,6 +26,7 @@ public final class ModuleManager {
         }
 
         register(new ToggleSprintModule());
+        register(new AutoJumpModule());
         register(new ZoomModule());
         register(new FullbrightModule());
         register(new PerspectiveModule());

@@ -11,11 +11,11 @@ public final class PotionElement extends HudElement {
 
     @Override
     public void render(Minecraft minecraft) {
-        RenderUtil.panelText(minecraft, getX(), getY(), "POT " + minecraft.thePlayer.getActivePotionEffects().size());
+        renderPanel(minecraft, "POT " + minecraft.thePlayer.getActivePotionEffects().size());
     }
 
     @Override
     public int getWidth(Minecraft minecraft) {
-        return RenderUtil.panelWidth(minecraft, "POT 00");
+        return panelWidth(minecraft, "POT 00");
     }
 }

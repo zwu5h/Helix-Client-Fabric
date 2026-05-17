@@ -15,11 +15,11 @@ public final class SpeedElement extends HudElement {
         double dx = client.player.getX() - client.player.lastX;
         double dz = client.player.getZ() - client.player.lastZ;
         double blocksPerSecond = Math.sqrt(dx * dx + dz * dz) * 20.0D;
-        RenderUtil.panelText(context, client, x(), y(), String.format("SPD %.2f", blocksPerSecond));
+        renderPanel(context, client, String.format("SPD %.2f", blocksPerSecond));
     }
 
     @Override
     public int width(MinecraftClient client) {
-        return RenderUtil.panelWidth(client, "SPD 00.00");
+        return panelWidth(client, "SPD 00.00");
     }
 }
