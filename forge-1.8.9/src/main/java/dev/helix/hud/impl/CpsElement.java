@@ -13,7 +13,7 @@ public final class CpsElement extends HudElement {
     private boolean previousDown;
 
     public CpsElement() {
-        super("cps", 8, 28);
+        super("cps", "CPS", 8, 28);
     }
 
     @Override
@@ -33,5 +33,10 @@ public final class CpsElement extends HudElement {
     @Override
     public void render(Minecraft minecraft) {
         RenderUtil.panelText(minecraft, getX(), getY(), "CPS " + clicks.size());
+    }
+
+    @Override
+    public int getWidth(Minecraft minecraft) {
+        return RenderUtil.panelWidth(minecraft, "CPS 00");
     }
 }

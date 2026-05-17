@@ -18,6 +18,11 @@ Output:
 fabric/build/libs/HelixClient-Fabric.jar
 ```
 
+Controls:
+
+- Right Shift opens the ClickGUI.
+- H opens the in-game HUD editor.
+
 ## Build Forge 1.8.9
 
 Forge 1.8.9 should be built with Java 8.
@@ -32,3 +37,8 @@ Output:
 ```plain text
 forge-1.8.9/build/libs/HelixClient-1.8.9.jar
 ```
+
+Controls:
+
+- Right Shift opens the ClickGUI.
+- H opens the in-game HUD editor.

@@ -7,7 +7,7 @@ import net.minecraft.client.gui.DrawContext;
 
 public final class CoordinatesElement extends HudElement {
     public CoordinatesElement() {
-        super("coordinates", 8, 48);
+        super("coordinates", "Coordinates", 8, 48);
     }
 
     @Override
@@ -18,5 +18,10 @@ public final class CoordinatesElement extends HudElement {
 
         String text = "XYZ " + client.player.getBlockX() + " " + client.player.getBlockY() + " " + client.player.getBlockZ();
         RenderUtil.panelText(context, client, x(), y(), text);
+    }
+
+    @Override
+    public int width(MinecraftClient client) {
+        return RenderUtil.panelWidth(client, "XYZ -0000 000 -0000");
     }
 }

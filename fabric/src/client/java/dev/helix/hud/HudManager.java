@@ -4,6 +4,11 @@ import dev.helix.hud.impl.CoordinatesElement;
 import dev.helix.hud.impl.CpsElement;
 import dev.helix.hud.impl.FpsElement;
 import dev.helix.hud.impl.KeystrokesElement;
+import dev.helix.hud.impl.ArmorElement;
+import dev.helix.hud.impl.DirectionElement;
+import dev.helix.hud.impl.PingElement;
+import dev.helix.hud.impl.PotionElement;
+import dev.helix.hud.impl.SpeedElement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
@@ -24,6 +29,11 @@ public final class HudManager {
         elements.add(new CpsElement());
         elements.add(new CoordinatesElement());
         elements.add(new KeystrokesElement());
+        elements.add(new ArmorElement());
+        elements.add(new PotionElement());
+        elements.add(new PingElement());
+        elements.add(new DirectionElement());
+        elements.add(new SpeedElement());
     }
 
     public void tick(MinecraftClient client) {

@@ -7,7 +7,7 @@ import net.minecraft.util.MathHelper;
 
 public final class CoordinatesElement extends HudElement {
     public CoordinatesElement() {
-        super("coordinates", 8, 48);
+        super("coordinates", "Coordinates", 8, 48);
     }
 
     @Override
@@ -17,5 +17,10 @@ public final class CoordinatesElement extends HudElement {
                 + MathHelper.floor_double(minecraft.thePlayer.posY) + " "
                 + MathHelper.floor_double(minecraft.thePlayer.posZ);
         RenderUtil.panelText(minecraft, getX(), getY(), text);
+    }
+
+    @Override
+    public int getWidth(Minecraft minecraft) {
+        return RenderUtil.panelWidth(minecraft, "XYZ -0000 000 -0000");
     }
 }

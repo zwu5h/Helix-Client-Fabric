@@ -5,18 +5,18 @@ import dev.helix.render.RenderUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 
-public final class FpsElement extends HudElement {
-    public FpsElement() {
-        super("fps", "FPS", 8, 8);
+public final class PotionElement extends HudElement {
+    public PotionElement() {
+        super("potions", "Potions", 8, 138);
     }
 
     @Override
     public void render(DrawContext context, MinecraftClient client) {
-        RenderUtil.panelText(context, client, x(), y(), "FPS " + client.getCurrentFps());
+        RenderUtil.panelText(context, client, x(), y(), "POT " + client.player.getStatusEffects().size());
     }
 
     @Override
     public int width(MinecraftClient client) {
-        return RenderUtil.panelWidth(client, "FPS " + client.getCurrentFps());
+        return RenderUtil.panelWidth(client, "POT 00");
     }
 }

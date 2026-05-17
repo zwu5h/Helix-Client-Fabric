@@ -5,23 +5,35 @@ import net.minecraft.client.gui.DrawContext;
 
 public abstract class HudElement {
     private final String id;
+    private final String title;
     private int x;
     private int y;
     private double scale = 1.0;
 
-    protected HudElement(String id, int x, int y) {
+    protected HudElement(String id, String title, int x, int y) {
         this.id = id;
+        this.title = title;
         this.x = x;
         this.y = y;
     }
 
     public abstract void render(DrawContext context, MinecraftClient client);
 
+    public abstract int width(MinecraftClient client);
+
+    public int height(MinecraftClient client) {
+        return 16;
+    }
+
     public void tick(MinecraftClient client) {
     }
 
     public String id() {
         return id;
+    }
+
+    public String title() {
+        return title;
     }
 
     public int x() {
@@ -43,5 +55,9 @@ public abstract class HudElement {
 
     public void setScale(double scale) {
         this.scale = Math.max(0.5, Math.min(3.0, scale));
+    }
+
+    public boolean contains(MinecraftClient client, int mouseX, int mouseY) {
+        return mouseX >= x && mouseX <= x + width(client) && mouseY >= y && mouseY <= y + height(client);
     }
 }

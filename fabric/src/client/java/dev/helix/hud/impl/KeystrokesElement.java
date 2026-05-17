@@ -7,7 +7,7 @@ import net.minecraft.client.gui.DrawContext;
 
 public final class KeystrokesElement extends HudElement {
     public KeystrokesElement() {
-        super("keystrokes", 8, 72);
+        super("keystrokes", "Keystrokes", 8, 72);
     }
 
     @Override
@@ -18,5 +18,15 @@ public final class KeystrokesElement extends HudElement {
         RenderUtil.key(context, client, x, y + 22, "A", client.options.leftKey.isPressed());
         RenderUtil.key(context, client, x + 24, y + 22, "S", client.options.backKey.isPressed());
         RenderUtil.key(context, client, x + 48, y + 22, "D", client.options.rightKey.isPressed());
+    }
+
+    @Override
+    public int width(MinecraftClient client) {
+        return 68;
+    }
+
+    @Override
+    public int height(MinecraftClient client) {
+        return 40;
     }
 }

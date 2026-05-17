@@ -4,9 +4,13 @@ import dev.helix.config.ConfigManager;
 import dev.helix.hud.HudManager;
 import dev.helix.module.ModuleManager;
 import dev.helix.ui.ClickGuiScreen;
+import dev.helix.ui.HelixMainMenuScreen;
+import dev.helix.ui.HudEditorScreen;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -35,6 +39,7 @@ public final class HelixClient {
 
     private final Minecraft minecraft = Minecraft.getMinecraft();
     private KeyBinding clickGuiKey;
+    private KeyBinding hudEditorKey;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -47,7 +52,9 @@ public final class HelixClient {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         clickGuiKey = new KeyBinding("key.helixclient.click_gui", Keyboard.KEY_RSHIFT, "key.categories.helixclient");
+        hudEditorKey = new KeyBinding("key.helixclient.hud_editor", Keyboard.KEY_H, "key.categories.helixclient");
         ClientRegistry.registerKeyBinding(clickGuiKey);
+        ClientRegistry.registerKeyBinding(hudEditorKey);
 
         MinecraftForge.EVENT_BUS.register(HUD);
         MinecraftForge.EVENT_BUS.register(this);
@@ -64,6 +71,9 @@ public final class HelixClient {
         while (clickGuiKey.isPressed()) {
             minecraft.displayGuiScreen(new ClickGuiScreen());
         }
+        while (hudEditorKey.isPressed()) {
+            minecraft.displayGuiScreen(new HudEditorScreen());
+        }
 
         MODULES.tick(minecraft);
         HUD.tick(minecraft);
@@ -73,5 +83,12 @@ public final class HelixClient {
     @SubscribeEvent
     public void onKey(InputEvent.KeyInputEvent event) {
         MODULES.onKeyInput();
+    }
+
+    @SubscribeEvent
+    public void onGuiOpen(GuiOpenEvent event) {
+        if (event.gui instanceof GuiMainMenu && !(event.gui instanceof HelixMainMenuScreen)) {
+            event.gui = new HelixMainMenuScreen();
+        }
     }
 }

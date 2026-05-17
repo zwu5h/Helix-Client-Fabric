@@ -12,7 +12,7 @@ public final class CpsElement extends HudElement {
     private final Deque<Long> clicks = new ArrayDeque<>();
 
     public CpsElement() {
-        super("cps", 8, 28);
+        super("cps", "CPS", 8, 28);
     }
 
     @Override
@@ -30,5 +30,10 @@ public final class CpsElement extends HudElement {
     @Override
     public void render(DrawContext context, MinecraftClient client) {
         RenderUtil.panelText(context, client, x(), y(), "CPS " + clicks.size());
+    }
+
+    @Override
+    public int width(MinecraftClient client) {
+        return RenderUtil.panelWidth(client, "CPS 00");
     }
 }
