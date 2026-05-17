@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "helix-client",
+  "version": "${version}",
+  "name": "Helix Client",
+  "description": "A clean, modular Fabric client with HUD, ClickGUI, config, and quality-of-life modules.",
+  "authors": ["Helix"],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.helix.HelixClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.2",
+    "fabric-api": "*",
+    "minecraft": "1.21.11",
+    "java": ">=21"
+  }
+}
