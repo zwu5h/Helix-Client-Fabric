@@ -1,6 +1,6 @@
-# Helix Client Fabric
+# Helix Client 1.8.9
 
-Fabric client MVP for Minecraft 1.21.11.
+Forge client MVP for Minecraft 1.8.9.
 
 ## Build
 
@@ -11,5 +11,5 @@ gradlew build
 The release jar is written to:
 
 ```plain text
-build/libs/HelixClient-Fabric.jar
+build/libs/HelixClient-1.8.9.jar
 ```

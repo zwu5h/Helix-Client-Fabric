@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "helixclient",
+    "name": "Helix Client",
+    "description": "A clean 1.8.9 Forge client with HUD, ClickGUI, config, and quality-of-life modules.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["Helix"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

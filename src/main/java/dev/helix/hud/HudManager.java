@@ -1,0 +1,54 @@
+package dev.helix.hud;
+
+import dev.helix.hud.impl.CoordinatesElement;
+import dev.helix.hud.impl.CpsElement;
+import dev.helix.hud.impl.FpsElement;
+import dev.helix.hud.impl.KeystrokesElement;
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public final class HudManager {
+    private final List<HudElement> elements = new ArrayList<HudElement>();
+
+    public void bootstrap() {
+        if (!elements.isEmpty()) {
+            return;
+        }
+
+        elements.add(new FpsElement());
+        elements.add(new CpsElement());
+        elements.add(new CoordinatesElement());
+        elements.add(new KeystrokesElement());
+    }
+
+    public void tick(Minecraft minecraft) {
+        for (HudElement element : elements) {
+            element.tick(minecraft);
+        }
+    }
+
+    @SubscribeEvent
+    public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
+        if (event.type != RenderGameOverlayEvent.ElementType.ALL) {
+            return;
+        }
+
+        Minecraft minecraft = Minecraft.getMinecraft();
+        if (minecraft.gameSettings.showDebugInfo || minecraft.gameSettings.hideGUI || minecraft.thePlayer == null) {
+            return;
+        }
+
+        for (HudElement element : elements) {
+            element.render(minecraft);
+        }
+    }
+
+    public List<HudElement> elements() {
+        return Collections.unmodifiableList(elements);
+    }
+}
