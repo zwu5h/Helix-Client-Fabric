@@ -6,6 +6,7 @@ import dev.helix.hud.HudElement;
 import dev.helix.hud.HudManager;
 import dev.helix.module.Module;
 import dev.helix.module.ModuleManager;
+import dev.helix.setting.BooleanSetting;
 import dev.helix.setting.NumberSetting;
 import dev.helix.setting.Setting;
 import net.fabricmc.loader.api.FabricLoader;
@@ -50,10 +51,10 @@ public final class ConfigManager {
                     continue;
                 }
 
-                module.setEnabled(state.enabled);
                 if (state.settings != null) {
                     applySettings(module, state.settings);
                 }
+                module.setEnabled(state.enabled);
             }
         }
 
@@ -121,6 +122,8 @@ public final class ConfigManager {
             Object value = values.get(setting.name());
             if (value instanceof Number number && setting instanceof NumberSetting numberSetting) {
                 numberSetting.setValue(number.doubleValue());
+            } else if (value instanceof Boolean bool && setting instanceof BooleanSetting booleanSetting) {
+                booleanSetting.setValue(bool);
             }
         }
     }

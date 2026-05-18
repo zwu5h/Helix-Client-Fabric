@@ -2,9 +2,11 @@ package dev.helix.module.impl;
 
 import dev.helix.module.Category;
 import dev.helix.module.Module;
+import dev.helix.setting.BooleanSetting;
 import net.minecraft.client.MinecraftClient;
 
 public final class AutoJumpModule extends Module {
+    private final BooleanSetting onlyForward = addSetting(new BooleanSetting("Only Forward", false));
     private boolean previousAutoJump;
 
     public AutoJumpModule() {
@@ -21,5 +23,10 @@ public final class AutoJumpModule extends Module {
     @Override
     public void onDisable() {
         MinecraftClient.getInstance().options.getAutoJump().setValue(previousAutoJump);
+    }
+
+    @Override
+    public void tick(MinecraftClient client) {
+        client.options.getAutoJump().setValue(!onlyForward.value() || client.options.forwardKey.isPressed());
     }
 }

@@ -32,8 +32,8 @@ public final class HelixClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         CONFIG.load();
-        MODULES.bootstrap();
         HUD.bootstrap();
+        MODULES.bootstrap();
         CONFIG.apply(MODULES, HUD);
 
         clickGuiKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
