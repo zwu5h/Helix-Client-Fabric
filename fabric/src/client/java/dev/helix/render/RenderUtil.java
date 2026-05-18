@@ -19,12 +19,18 @@ public final class RenderUtil {
     }
 
     public static void panelText(DrawContext context, MinecraftClient client, int x, int y, String text, int accent, boolean background) {
+        panelText(context, client, x, y, text, accent, WHITE, background, 0xAA, true);
+    }
+
+    public static void panelText(DrawContext context, MinecraftClient client, int x, int y, String text, int accent, int textColor, boolean background, int backgroundAlpha, boolean border) {
         int width = panelWidth(client, text);
         if (background) {
-            context.fill(x, y, x + width, y + 16, PANEL);
+            context.fill(x, y, x + width, y + 16, (backgroundAlpha << 24) | 0x0C1016);
         }
-        context.fill(x, y + 15, x + width, y + 16, accent);
-        context.drawText(client.textRenderer, text, x + 7, y + 4, WHITE, false);
+        if (border) {
+            context.fill(x, y + 15, x + width, y + 16, accent);
+        }
+        context.drawText(client.textRenderer, text, x + 7, y + 4, textColor, false);
     }
 
     public static int panelWidth(MinecraftClient client, String text) {

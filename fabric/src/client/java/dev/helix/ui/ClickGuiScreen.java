@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.HashSet;
 import java.util.Locale;
@@ -268,6 +269,11 @@ public final class ClickGuiScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyInput input) {
+        if (input.key() == GLFW.GLFW_KEY_RIGHT_SHIFT || input.key() == GLFW.GLFW_KEY_ESCAPE) {
+            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            close();
+            return true;
+        }
         if (input.key() == 259 && !search.isEmpty()) {
             search = search.substring(0, search.length() - 1);
             scroll = 0;

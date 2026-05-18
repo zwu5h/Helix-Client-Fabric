@@ -55,7 +55,7 @@ public final class HelixClient implements ClientModInitializer {
 
     private void tick(MinecraftClient client) {
         while (clickGuiKey.wasPressed()) {
-            client.setScreen(new ClickGuiScreen());
+            client.setScreen(client.currentScreen instanceof ClickGuiScreen ? null : new ClickGuiScreen());
         }
         while (hudEditorKey.wasPressed()) {
             client.setScreen(new HudEditorScreen());

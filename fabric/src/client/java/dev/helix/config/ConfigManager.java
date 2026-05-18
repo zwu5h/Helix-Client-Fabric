@@ -47,14 +47,9 @@ public final class ConfigManager {
         if (loaded.modules != null) {
             for (Module module : modules.all()) {
                 ModuleState state = loaded.modules.get(module.name());
-                if (state == null) {
-                    continue;
-                }
-
-                if (state.settings != null) {
+                if (state != null && state.settings != null) {
                     applySettings(module, state.settings);
                 }
-                module.setEnabled(state.enabled);
             }
         }
 
@@ -67,18 +62,26 @@ public final class ConfigManager {
                     element.setVisible(state.visible);
                     element.setRainbow(state.rainbow);
                     element.setBackground(state.background);
+                    element.setBorder(state.border);
+                    element.setBackgroundAlpha(state.backgroundAlpha);
                     element.setAccentColor(state.accentColor);
+                    element.setTextColor(state.textColor);
+                }
+            }
+        }
+
+        if (loaded.modules != null) {
+            for (Module module : modules.all()) {
+                ModuleState state = loaded.modules.get(module.name());
+                if (state != null) {
+                    module.setEnabled(state.enabled);
                 }
             }
         }
     }
 
     public void autoSave(ModuleManager modules, HudManager hud) {
-        long now = System.currentTimeMillis();
-        if (now - lastSave >= AUTO_SAVE_INTERVAL_MS) {
-            save(modules, hud);
-            lastSave = now;
-        }
+        // Runtime settings are saved by the screens that mutate them. Avoid writing JSON from the tick loop.
     }
 
     public void save(ModuleManager modules, HudManager hud) {
@@ -110,7 +113,10 @@ public final class ConfigManager {
             state.visible = element.visible();
             state.rainbow = element.rainbow();
             state.background = element.background();
+            state.border = element.border();
+            state.backgroundAlpha = element.backgroundAlpha();
             state.accentColor = element.accentColor();
+            state.textColor = element.textColor();
             config.hud.put(element.id(), state);
         }
 
@@ -156,6 +162,9 @@ public final class ConfigManager {
         private boolean visible = true;
         private boolean rainbow;
         private boolean background = true;
+        private boolean border = true;
+        private int backgroundAlpha = 0xAA;
         private int accentColor = 0xFF8A35FF;
+        private int textColor = 0xFFEAF6FF;
     }
 }

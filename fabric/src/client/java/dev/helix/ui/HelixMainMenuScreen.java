@@ -1,5 +1,6 @@
 package dev.helix.ui;
 
+import dev.helix.module.impl.PerformanceModule;
 import dev.helix.render.RenderUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
@@ -12,9 +13,13 @@ import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public final class HelixMainMenuScreen extends Screen {
     private final List<MenuButton> buttons = new ArrayList<>();
+    private final List<Particle> particles = new ArrayList<>();
+    private int particleWidth;
+    private int particleHeight;
 
     public HelixMainMenuScreen() {
         super(Text.literal("Helix Client"));
@@ -24,18 +29,20 @@ public final class HelixMainMenuScreen extends Screen {
     protected void init() {
         buttons.clear();
         int center = width / 2;
-        int top = height / 2 - 8;
-        buttons.add(new MenuButton(1, center - 132, top, "EINZELSPIELER"));
-        buttons.add(new MenuButton(2, center - 132, top + 50, "MEHRSPIELER"));
-        buttons.add(new MenuButton(3, center - 132, top + 100, "OPTIONEN"));
-        buttons.add(new MenuButton(4, center - 132, top + 150, "BEENDEN"));
+        int top = height / 2 - 12;
+        buttons.add(new MenuButton(1, center - 122, top, "EINZELSPIELER"));
+        buttons.add(new MenuButton(2, center - 122, top + 48, "MEHRSPIELER"));
+        buttons.add(new MenuButton(3, center - 122, top + 96, "OPTIONEN"));
+        buttons.add(new MenuButton(4, center - 122, top + 144, "BEENDEN"));
+        initParticles();
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.fillGradient(0, 0, width, height, 0xFF03050A, 0xFF0D1018);
-        drawAmbientParticles(context, delta);
-        drawHelix(context, delta);
+        context.fillGradient(0, 0, width, height, 0xFF04020A, 0xFF12091E);
+        context.fillGradient(0, 0, width, height, 0x66110A22, 0x22000000);
+        drawAmbientParticles(context, mouseX, mouseY, delta);
+        drawHelix(context, mouseX, mouseY, delta);
         drawHelixLogo(context, width / 2, height / 2 - 150);
         drawCenteredScaledText(context, "H  E  L  I  X", width / 2, height / 2 - 96, 0xFFF3F1FF, 2.4F);
         drawCenteredScaledText(context, "C  L  I  E  N  T", width / 2, height / 2 - 58, 0xFF35D8FF, 1.4F);
@@ -75,37 +82,86 @@ public final class HelixMainMenuScreen extends Screen {
         return false;
     }
 
-    private void drawHelix(DrawContext context, float delta) {
+    private void drawHelix(DrawContext context, int mouseX, int mouseY, float delta) {
+        long start = System.nanoTime();
         float time = (System.currentTimeMillis() % 180000L) / 2800.0F + delta * 0.02F;
-        int cx = (int) (width * 0.77F);
+        int points = PerformanceModule.lowPerformance() ? 54 : Math.max(64, Math.min(104, height / 7));
+        int cx = (int) (width * 0.77F + (mouseX - width / 2.0F) * 0.018F);
         int cy = height / 2;
-        for (int i = 0; i < 96; i++) {
-            float t = i / 96.0F;
+        int top = (int) (cy - height * 0.42F + (mouseY - height / 2.0F) * 0.012F);
+        int span = (int) (height * 0.84F);
+        for (int i = 0; i < points; i++) {
+            float t = i / (float) points;
+            double angle = t * Math.PI * 7.0D + time;
             int y = (int) (cy - height * 0.46F + t * height * 0.92F);
-            double wave = Math.sin(t * Math.PI * 7.0D + time);
-            int radius = (int) (38 + 64 * (0.2F + t));
+            y = top + (int) (t * span);
+            double wave = Math.sin(angle);
+            double depth = (Math.cos(angle) + 1.0D) * 0.5D;
+            int radius = (int) (46 + 36 * Math.sin(t * Math.PI));
             int x1 = (int) (cx + wave * radius);
-            int x2 = (int) (cx - wave * radius * 0.56D);
-            int alpha = 34 + (int) (Math.abs(wave) * 72.0D);
-            int color = (alpha << 24) | 0x35D8FF;
-            context.fill(x1 - 1, y - 1, x1 + 2, y + 2, color);
-            context.fill(x2 - 1, y - 1, x2 + 2, y + 2, color);
-            if (i % 3 == 0) {
-                context.fill(Math.min(x1, x2), y, Math.max(x1, x2), y + 1, 0x1835D8FF);
+            int x2 = (int) (cx - wave * radius);
+            int alpha1 = 42 + (int) (depth * 92.0D);
+            int alpha2 = 42 + (int) ((1.0D - depth) * 92.0D);
+            int size1 = depth > 0.55D ? 3 : 2;
+            int size2 = depth < 0.45D ? 3 : 2;
+            context.fill(x1 - size1 / 2, y - size1 / 2, x1 + size1, y + size1, (alpha1 << 24) | 0x8A35FF);
+            context.fill(x2 - size2 / 2, y - size2 / 2, x2 + size2, y + size2, (alpha2 << 24) | 0x35D8FF);
+            if (!PerformanceModule.lowPerformance() && i % 2 == 0) {
+                context.fill(Math.min(x1, x2), y, Math.max(x1, x2), y + 1, 0x1FBA8CFF);
             }
+        }
+        logRenderTime("DNA", start);
+    }
+
+    private void drawAmbientParticles(DrawContext context, int mouseX, int mouseY, float delta) {
+        long start = System.nanoTime();
+        if (particles.isEmpty() || particleWidth != width || particleHeight != height || particles.size() != PerformanceModule.menuParticles()) {
+            initParticles();
+        }
+        float parallaxX = (mouseX - width / 2.0F) * 0.012F;
+        float parallaxY = (mouseY - height / 2.0F) * 0.010F;
+        for (Particle particle : particles) {
+            particle.x += particle.vx * delta;
+            particle.y += particle.vy * delta;
+            if (particle.x < 0) {
+                particle.x += width;
+            } else if (particle.x > width) {
+                particle.x -= width;
+            }
+            if (particle.y < 0) {
+                particle.y += height;
+            } else if (particle.y > height) {
+                particle.y -= height;
+            }
+            int x = (int) (particle.x + parallaxX * particle.depth);
+            int y = (int) (particle.y + parallaxY * particle.depth);
+            context.fill(x, y, x + particle.size, y + particle.size, (particle.alpha << 24) | 0xB98CFF);
+        }
+        logRenderTime("Particles", start);
+    }
+
+    private void initParticles() {
+        particles.clear();
+        particleWidth = width;
+        particleHeight = height;
+        Random random = new Random(0x48454C49584CL);
+        int count = PerformanceModule.menuParticles();
+        for (int i = 0; i < count; i++) {
+            particles.add(new Particle(
+                    random.nextFloat() * Math.max(1, width),
+                    random.nextFloat() * Math.max(1, height),
+                    (random.nextFloat() - 0.5F) * 0.22F,
+                    (random.nextFloat() - 0.5F) * 0.18F,
+                    0.4F + random.nextFloat() * 1.8F,
+                    random.nextInt(3) == 0 ? 2 : 1,
+                    22 + random.nextInt(42)
+            ));
         }
     }
 
-    private void drawAmbientParticles(DrawContext context, float delta) {
-        float time = (System.currentTimeMillis() % 180000L) / 2600.0F + delta * 0.02F;
-        for (int i = 0; i < 38; i++) {
-            float seedX = ((i * 37) % 100) / 100.0F;
-            float seedY = ((i * 61) % 100) / 100.0F;
-            int x = (int) ((seedX * width + Math.sin(time * (0.18F + i * 0.004F) + i) * 6.0D) % width);
-            int y = (int) ((seedY * height + Math.cos(time * (0.22F + i * 0.004F) + i) * 4.0D) % height);
-            int size = i % 11 == 0 ? 2 : 1;
-            int alpha = i % 11 == 0 ? 0x44 : 0x33;
-            context.fill(x, y, x + size, y + size, (alpha << 24) | 0x35D8FF);
+    private void logRenderTime(String label, long start) {
+        if (PerformanceModule.profiling() && System.currentTimeMillis() % 1200L < 20L) {
+            System.out.println("[Helix] MainMenu " + label + " " + ((System.nanoTime() - start) / 1_000_000.0D) + "ms");
         }
     }
 
@@ -139,16 +195,39 @@ public final class HelixMainMenuScreen extends Screen {
 
         private void render(DrawContext context, int mouseX, int mouseY) {
             boolean hovered = contains(mouseX, mouseY);
-            RenderUtil.glassPanel(context, x, y, 264, 42, hovered);
-            context.fill(x, y, x + 2, y + 42, hovered ? 0xAA35D8FF : 0x5535D8FF);
-            context.drawText(textRenderer, label, x + 28, y + 17, hovered ? RenderUtil.CYAN : RenderUtil.WHITE, false);
-            if (hovered) {
-                context.fill(x + 2, y + 1, x + 262, y + 2, 0x6635D8FF);
+            RenderUtil.glassPanel(context, x, y, 244, 40, hovered);
+            context.fill(x, y, x + 244, y + 1, hovered ? 0xAA8A35FF : 0x668A35FF);
+            context.fill(x, y + 39, x + 244, y + 40, hovered ? 0xAA35D8FF : 0x5535D8FF);
+            int textX = x + 122 - textRenderer.getWidth(label) / 2;
+            context.drawText(textRenderer, label, textX, y + 16, hovered ? RenderUtil.CYAN : RenderUtil.WHITE, false);
+            if (hovered && !PerformanceModule.lowPerformance()) {
+                context.fill(x + 10, y + 4, x + 234, y + 5, 0x4435D8FF);
+                context.fill(x + 10, y + 35, x + 234, y + 36, 0x448A35FF);
             }
         }
 
         private boolean contains(int mouseX, int mouseY) {
-            return mouseX >= x && mouseX <= x + 264 && mouseY >= y && mouseY <= y + 42;
+            return mouseX >= x && mouseX <= x + 244 && mouseY >= y && mouseY <= y + 40;
+        }
+    }
+
+    private static final class Particle {
+        private float x;
+        private float y;
+        private final float vx;
+        private final float vy;
+        private final float depth;
+        private final int size;
+        private final int alpha;
+
+        private Particle(float x, float y, float vx, float vy, float depth, int size, int alpha) {
+            this.x = x;
+            this.y = y;
+            this.vx = vx;
+            this.vy = vy;
+            this.depth = depth;
+            this.size = size;
+            this.alpha = alpha;
         }
     }
 }

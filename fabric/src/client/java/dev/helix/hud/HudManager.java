@@ -58,7 +58,7 @@ public final class HudManager {
 
         for (HudElement element : elements) {
             if (element.visible()) {
-                element.render(context, client);
+                element.renderScaled(context, client);
             }
         }
     }

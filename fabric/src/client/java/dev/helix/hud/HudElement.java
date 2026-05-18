@@ -13,7 +13,10 @@ public abstract class HudElement {
     private boolean visible = true;
     private boolean rainbow;
     private boolean background = true;
+    private boolean border = true;
+    private int backgroundAlpha = 0xAA;
     private int accentColor = RenderUtil.PURPLE;
+    private int textColor = RenderUtil.WHITE;
 
     protected HudElement(String id, String title, int x, int y) {
         this.id = id;
@@ -30,11 +33,20 @@ public abstract class HudElement {
         return 16;
     }
 
+    public final void renderScaled(DrawContext context, MinecraftClient client) {
+        context.getMatrices().pushMatrix();
+        context.getMatrices().translate(x, y);
+        context.getMatrices().scale((float) scale, (float) scale);
+        context.getMatrices().translate(-x, -y);
+        render(context, client);
+        context.getMatrices().popMatrix();
+    }
+
     public void tick(MinecraftClient client) {
     }
 
     protected void renderPanel(DrawContext context, MinecraftClient client, String text) {
-        RenderUtil.panelText(context, client, x, y, text, currentAccentColor(), background);
+        RenderUtil.panelText(context, client, x, y, text, currentAccentColor(), textColor, background, backgroundAlpha, border);
     }
 
     protected int panelWidth(MinecraftClient client, String text) {
@@ -101,6 +113,30 @@ public abstract class HudElement {
         this.accentColor = accentColor;
     }
 
+    public boolean border() {
+        return border;
+    }
+
+    public void setBorder(boolean border) {
+        this.border = border;
+    }
+
+    public int backgroundAlpha() {
+        return backgroundAlpha;
+    }
+
+    public void setBackgroundAlpha(int backgroundAlpha) {
+        this.backgroundAlpha = Math.max(0, Math.min(255, backgroundAlpha));
+    }
+
+    public int textColor() {
+        return textColor;
+    }
+
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
+    }
+
     public int currentAccentColor() {
         if (!rainbow) {
             return accentColor;
@@ -119,6 +155,14 @@ public abstract class HudElement {
     }
 
     public boolean contains(MinecraftClient client, int mouseX, int mouseY) {
-        return mouseX >= x && mouseX <= x + width(client) && mouseY >= y && mouseY <= y + height(client);
+        return mouseX >= x && mouseX <= x + scaledWidth(client) && mouseY >= y && mouseY <= y + scaledHeight(client);
+    }
+
+    public int scaledWidth(MinecraftClient client) {
+        return (int) Math.ceil(width(client) * scale);
+    }
+
+    public int scaledHeight(MinecraftClient client) {
+        return (int) Math.ceil(height(client) * scale);
     }
 }

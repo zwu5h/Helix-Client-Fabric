@@ -30,10 +30,10 @@ public final class HudEditorScreen extends Screen {
         for (HudElement element : HelixClient.HUD.elements()) {
             boolean hovered = element.contains(client, mouseX, mouseY);
             int frameColor = element == selected ? 0xAA8A35FF : hovered ? 0x6635D8FF : 0x33101822;
-            context.fill(element.x() - 2, element.y() - 2, element.x() + element.width(client) + 2, element.y() + element.height(client) + 2, frameColor);
-            element.render(context, client);
+            context.fill(element.x() - 2, element.y() - 2, element.x() + element.scaledWidth(client) + 2, element.y() + element.scaledHeight(client) + 2, frameColor);
+            element.renderScaled(context, client);
             if (!element.visible()) {
-                context.fill(element.x(), element.y(), element.x() + element.width(client), element.y() + element.height(client), 0x66000000);
+                context.fill(element.x(), element.y(), element.x() + element.scaledWidth(client), element.y() + element.scaledHeight(client), 0x66000000);
                 context.drawText(textRenderer, "hidden", element.x() + 5, element.y() + 4, RenderUtil.MUTED, false);
             }
         }
@@ -53,12 +53,12 @@ public final class HudEditorScreen extends Screen {
                 selected = element;
                 if (click.button() == 1) {
                     element.toggleRainbow();
-                    HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+                    saveHudEdits();
                     return true;
                 }
                 if (click.button() == 2) {
                     element.toggleBackground();
-                    HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+                    saveHudEdits();
                     return true;
                 }
                 dragging = element;
@@ -74,8 +74,8 @@ public final class HudEditorScreen extends Screen {
     public boolean mouseDragged(Click click, double deltaX, double deltaY) {
         if (dragging != null) {
             MinecraftClient client = MinecraftClient.getInstance();
-            int snappedX = Math.max(2, Math.min(width - dragging.width(client) - 2, (int) click.x() - dragOffsetX));
-            int snappedY = Math.max(2, Math.min(height - dragging.height(client) - 2, (int) click.y() - dragOffsetY));
+            int snappedX = Math.max(2, Math.min(width - dragging.scaledWidth(client) - 2, (int) click.x() - dragOffsetX));
+            int snappedY = Math.max(2, Math.min(height - dragging.scaledHeight(client) - 2, (int) click.y() - dragOffsetY));
             dragging.setPosition((snappedX / 4) * 4, (snappedY / 4) * 4);
             return true;
         }
@@ -85,7 +85,7 @@ public final class HudEditorScreen extends Screen {
     @Override
     public boolean mouseReleased(Click click) {
         dragging = null;
-        HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+        saveHudEdits();
         return super.mouseReleased(click);
     }
 
@@ -95,7 +95,7 @@ public final class HudEditorScreen extends Screen {
         for (HudElement element : HelixClient.HUD.elements()) {
             if (element.contains(client, (int) mouseX, (int) mouseY)) {
                 element.setScale(element.scale() + (verticalAmount > 0 ? 0.1D : -0.1D));
-                HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+                saveHudEdits();
                 return true;
             }
         }
@@ -105,29 +105,29 @@ public final class HudEditorScreen extends Screen {
     @Override
     public boolean keyPressed(KeyInput input) {
         if (input.key() == GLFW.GLFW_KEY_H || input.key() == GLFW.GLFW_KEY_ESCAPE) {
-            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            saveHudEdits();
             close();
             return true;
         }
         if (selected != null && input.key() == GLFW.GLFW_KEY_R) {
             selected.toggleRainbow();
-            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            saveHudEdits();
             return true;
         }
         if (selected != null && input.key() == GLFW.GLFW_KEY_V) {
             selected.setVisible(!selected.visible());
-            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            saveHudEdits();
             return true;
         }
         if (selected != null && input.key() == GLFW.GLFW_KEY_B) {
             selected.toggleBackground();
-            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            saveHudEdits();
             return true;
         }
         if (selected != null && input.key() == GLFW.GLFW_KEY_C) {
             selected.setAccentColor(nextAccent(selected.accentColor()));
             selected.setRainbow(false);
-            HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
+            saveHudEdits();
             return true;
         }
         return super.keyPressed(input);
@@ -158,5 +158,10 @@ public final class HudEditorScreen extends Screen {
 
     private String onOff(boolean value) {
         return value ? "ON" : "OFF";
+    }
+
+    private void saveHudEdits() {
+        HelixClient.MODULES.syncHudSettingsFromElements();
+        HelixClient.CONFIG.save(HelixClient.MODULES, HelixClient.HUD);
     }
 }

@@ -9,6 +9,7 @@ import dev.helix.module.impl.HudToggleModule;
 import dev.helix.module.impl.MotionBlurModule;
 import dev.helix.module.impl.NotificationModule;
 import dev.helix.module.impl.PerspectiveModule;
+import dev.helix.module.impl.PerformanceModule;
 import dev.helix.module.impl.ScreenshotManagerModule;
 import dev.helix.module.impl.ToggleSprintModule;
 import dev.helix.module.impl.ZoomModule;
@@ -34,6 +35,7 @@ public final class ModuleManager {
         register(new FullbrightModule());
         register(new PerspectiveModule());
         register(new MotionBlurModule());
+        register(new PerformanceModule());
         register(new BetterChatModule());
         register(new HitColorModule());
         register(new CrosshairModule());
@@ -62,6 +64,14 @@ public final class ModuleManager {
         for (Module module : modules) {
             if (module.enabled()) {
                 module.tick(client);
+            }
+        }
+    }
+
+    public void syncHudSettingsFromElements() {
+        for (Module module : modules) {
+            if (module instanceof HudToggleModule hudToggleModule) {
+                hudToggleModule.syncFromElement();
             }
         }
     }
